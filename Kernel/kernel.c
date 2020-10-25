@@ -101,8 +101,13 @@ int main() {
 	ncNewline();
 
 	ncPrint("[Finished]");*/
+	int i = 0;
 
-	while(1) {}
+
+	while(1) {
+		//getChar();
+		//drawPixel(i, i++, 0xFFFFFF);
+	}
 
 	return 0;
 }

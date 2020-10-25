@@ -8,6 +8,7 @@ static uint64_t ticks = 0;
 
 void timerTick() {
 	ticks++;
+	//ncPrintDec(ticks);
 }
 
 uint64_t getTicks() {

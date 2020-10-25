@@ -11,16 +11,16 @@ struct vbe_mode_info_structure {
 	uint16_t segment_a;
 	uint16_t segment_b;
 	uint32_t win_func_ptr;		// deprecated; used to switch banks from protected mode without returning to real mode
-	uint16_t pitch;			// number of bytes per horizontal line
-	uint16_t width;			// width in pixels
+	uint16_t pitch;				// number of bytes per horizontal line
+	uint16_t width;				// width in pixels
 	uint16_t height;			// height in pixels
-	uint8_t w_char;			// unused...
-	uint8_t y_char;			// ...
+	uint8_t w_char;				// unused...
+	uint8_t y_char;				// ...
 	uint8_t planes;
-	uint8_t bpp;			// bits per pixel in this mode
-	uint8_t banks;			// deprecated; total number of banks in this mode
+	uint8_t bpp;				// bits per pixel in this mode
+	uint8_t banks;				// deprecated; total number of banks in this mode
 	uint8_t memory_model;
-	uint8_t bank_size;		// deprecated; size of a bank, almost always 64 KB but may be 16 KB...
+	uint8_t bank_size;			// deprecated; size of a bank, almost always 64 KB but may be 16 KB...
 	uint8_t image_pages;
 	uint8_t reserved0;
 
@@ -49,10 +49,10 @@ void drawPixel(int x, int y, int color) {
 	int g = (color >> 8) & 0xFF;
 	int b = (color >> 16) & 0xFF;
 
-	*currPos = r;//r
+	*currPos = r; // r
 	currPos++;
-	*currPos = g;//g
+	*currPos = g; // g
 	currPos++;
-	*currPos = b;//b
+	*currPos = b; // b
 	currPos++;
 }
