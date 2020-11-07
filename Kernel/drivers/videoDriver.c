@@ -1,6 +1,5 @@
 #include <stdint.h>
-
-#define BITS_IN_BYTE 8;
+#include <videoDriver.h>
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -42,12 +41,19 @@ struct vbe_mode_info_structure {
 
 struct vbe_mode_info_structure * screenData = 0x0000000000005C00;
 
-void drawPixel(int x, int y, int color) {
-	char * currPos = (char *) (screenData->framebuffer + 3 * (x + y * (screenData->width)));
+SCREEN getScreenDimentions() {
+	SCREEN screen;
+	screen.width = screenData->width;
+	screen.height = screenData->height;
+	return screen;
+}
 
-	int r = color & 0xFF;
-	int g = (color >> 8) & 0xFF;
-	int b = (color >> 16) & 0xFF;
+void drawPixel(uint16_t x, uint16_t y, uint64_t color) {
+	char * currPos = screenData->framebuffer + 3 * (x + y * (screenData->width));
+
+	char r = color & 0xFF;
+	char g = (color >> 8) & 0xFF;
+	char b = (color >> 16) & 0xFF;
 
 	*currPos = r; // r
 	currPos++;

@@ -1,11 +1,19 @@
 GLOBAL _irq0handler
 GLOBAL _irq1handler
+GLOBAL _syscallhandler
 GLOBAL _cli
 GLOBAL _sti
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 
 EXTERN irqDispatcher
+EXTERN getChar
+EXTERN putChar
+EXTERN getTime
+EXTERN drawPixel
+EXTERN setInterval
+EXTERN stopInterval
+EXTERN getScreenDimentions
 
 section .text
 
@@ -65,10 +73,62 @@ _irq0handler:
 _irq1handler:
 	irqHandlerMaster 1
 
+_syscallhandler:
+	sti
+	cmp rax, 1
+	je .call_getc
+	cmp rax, 2
+	je .call_putc
+	cmp rax, 3
+	je .get_time
+	cmp rax, 4
+	je .draw_pixel
+	cmp rax, 5
+	je .set_interval
+	cmp rax, 6
+	je .stop_interval
+	cmp rax, 7
+	je .get_screen_dimentions
+	jmp .done
+
+.call_getc:
+	call getChar
+	jmp .done
+
+.call_putc:
+	call putChar
+	jmp .done
+
+.get_time:
+	call getTime
+	jmp .done
+
+.draw_pixel:
+	call drawPixel
+	jmp .done
+
+.set_interval:
+	call setInterval
+	jmp .done
+
+.stop_interval:
+	call stopInterval
+	jmp .done
+
+.get_screen_dimentions:
+	call getScreenDimentions
+	jmp .done
+
+.done:
+	push rax
+	mov al, 20h
+	out 20h, al
+	pop rax
+	iretq
+	
 _cli:
 	cli
 	ret
-
 
 _sti:
 	sti

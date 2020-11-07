@@ -1,6 +1,11 @@
+#include <lib.h>
 #include <stdint.h>
 #include <naiveConsole.h>
+#include <timeDriver.h>
 #include <keyboardDriver.h>
+#include <videoDriver.h>
+#include <font.h>
+#include <math.h>
 
 void * memset(void * destination, int32_t c, uint64_t length) {
 	uint8_t chr = (uint8_t)c;
@@ -46,15 +51,79 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 	return destination;
 }
 
-void putChar(char c) {
-	char aux[] = {c, '\0'};
-	ncPrint(aux);
+int countDigits(int num) {
+	int i = 0;
+	while(num != 0) {
+		num/=10;
+		i++;
+	}
+	return i;
+}
+
+int itoa(int num, char * buffer) {
+    int curr = 0, k = 0;
+    int digits = countDigits(num);
+
+    if (num == 0) {
+        // Base case
+        buffer[curr++] = '0';
+        buffer[curr] = '\0';
+        return 1;
+    }
+
+   	if (num < 0) {
+   		num *= -1;
+   		buffer[0] = '-';
+   		digits += 1;
+   		k = 1;
+   		curr++;
+   	}
+
+   	for (int i = digits-1; i >= k; i--) {
+   		buffer[i] = (num % 10) + '0';
+   		num /= 10;
+   	}
+   	return digits;
+}
+
+void putChar(char c, uint16_t x, uint16_t y) {
+	unsigned char * charPixels = charBitmap(c);
+	for (int i = 0; i < 16; ++i) {
+		char row = *charPixels;
+		for (int j = 0; j < 8; ++j) {
+			char bit = (row >> (7-j)) & 1;
+			uint32_t color = 0;
+			if (bit)
+				color = 0xFFFFFF;
+
+			drawPixel(x + j, y + i, color);
+		}
+		charPixels++;
+	}
 }
 
 char getChar() {
-	return 'a';
+	char c = getNextKey();
+	while (c == -1)
+		c = getNextKey();
+
+	return c;
 }
 
-void scanf(char * type, void * n) {
-	
+uint8_t bcdToInt(uint8_t n) {
+	uint8_t d1 = n >> 4;
+	uint8_t d2 = n & 0xF;
+	return d1*10+d2;
 }
+
+TIME getTime() {
+	TIME time;
+	time.year = 2000 + bcdToInt(getYear());
+	time.month = bcdToInt(getMonth());
+	time.day = bcdToInt(getDay());
+	time.hour = bcdToInt(getHour());
+	time.minute = bcdToInt(getMinute());
+	time.second = bcdToInt(getSecond());
+	return time;
+}
+

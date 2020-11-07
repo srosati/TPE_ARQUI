@@ -1,22 +1,23 @@
 include Makefile.inc
 
-SAMPLE_DATA=0001-sampleDataModule.bin
+LIB='lib.asm'
+LIB_O='lib.o'
 
-all: sampleCodeModule sampleDataModule chess
+all: asm shell chess
 
-sampleCodeModule:
-	cd SampleCodeModule; make
-
-sampleDataModule:
-	printf "This is sample data." >> $(SAMPLE_DATA) && dd if=/dev/zero bs=1 count=1 >> $(SAMPLE_DATA)
+shell:
+	cd Shell; make
 
 chess:
 	cd Chess; make
 
+asm: 
+	$(ASM) $(ASMFLAGS) -o $(LIB_O) $(LIB)
+
 clean:
-	cd SampleCodeModule; make clean
+	cd Shell; make clean
 	cd Chess; make clean
 	rm -rf *.bin
 
 
-.PHONY: sampleCodeModule chess all clean
+.PHONY: shell chess all clean

@@ -35,6 +35,7 @@ void configureIDT() {
 
   setupIDTEntry(0x20, (uint64_t)&_irq0handler); // Timer
   setupIDTEntry(0x21, (uint64_t)&_irq1handler); // Keyboard
+  setupIDTEntry(0x80, (uint64_t)&_syscallhandler); // Syscall
 
   setupIDTEntry(0x00, (uint64_t)&_exception0Handler);
   setupIDTEntry(0x01, (uint64_t)&_exception1Handler);

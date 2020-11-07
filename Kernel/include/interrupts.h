@@ -5,6 +5,7 @@
 
 void _irq0handler();
 void _irq1handler();
+void _syscallhandler();
 
 void _sti();
 void _cli();
