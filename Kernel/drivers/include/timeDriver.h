@@ -10,6 +10,8 @@ uint64_t getSeconds();
 
 uint64_t getTicks();
 
+uint8_t bcdToInt(uint8_t n);
+
 uint8_t getYear();
 
 uint8_t getMonth();

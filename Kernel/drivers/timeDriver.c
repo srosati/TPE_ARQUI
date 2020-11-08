@@ -19,6 +19,12 @@ typedef struct {
 
 static INTERVALS intervals;
 
+uint8_t bcdToInt(uint8_t n) {
+	uint8_t d1 = n >> 4;
+	uint8_t d2 = n & 0xF;
+	return d1*10+d2;
+}
+
 void initTimer() {
 	intervals.size = 0;
 }

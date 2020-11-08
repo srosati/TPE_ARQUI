@@ -335,19 +335,20 @@ uint8_t readMove() {
 							return 0;
 						}
 					}
-
-					if (kingSq->empty || kingSq->piece.moved || rookSq->empty || rookSq->piece.moved || !newRookSq->empty || !newKingSq->empty) {
-						putc('c', p);
-						newLine(p, startX);
-						return 0;
-					}
-
-					movePiece(rookSq, newRookSq);
-					movePiece(kingSq, newKingSq);
-
-					newLine(p, startX);
-					return 1;
 				}
+
+				if (kingSq->empty || kingSq->piece.moved || rookSq->empty || rookSq->piece.moved || !newRookSq->empty || !newKingSq->empty) {
+					putc('c', p);
+					newLine(p, startX);
+					return 0;
+				}
+
+				movePiece(rookSq, newRookSq);
+				movePiece(kingSq, newKingSq);
+
+				newLine(p, startX);
+				return 1;
+				
 			}
 		} 
 
