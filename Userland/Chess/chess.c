@@ -287,7 +287,6 @@ uint8_t canMove(uint8_t type, uint8_t fromRow, uint8_t fromCol, uint8_t toRow, u
 int readMove() {
 	POINT * p = &textWriters[turn];
 	uint8_t counter = 0;
-	uint16_t startX = p->x;
 
 	char fromRow = -1;
 	char fromCol = -1;
