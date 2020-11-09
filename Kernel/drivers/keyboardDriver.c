@@ -1,10 +1,12 @@
 #include <keyboardDriver.h>
-#include <naiveConsole.h>
+#include <stdint.h>
 #include <lib.h>
 
 #define LEN 58
 #define TO_UPPERCASE 'A' - 'a'
 #define BUFF_SIZE 2048
+
+#define SAVE_REGISTERS 80 //Arrow down
 
 typedef struct {
 	char buff[BUFF_SIZE];
@@ -13,7 +15,7 @@ typedef struct {
 } BUFFER;
 
 static char KEYS[] = {
-	'?', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '?',
+	0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '?',
 	'?', '?', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '?',
 	'?', '\n', '?', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '?',
 	'?', '?', '|', '?', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '?', '?',
@@ -30,9 +32,8 @@ void initKbBuffer() {
 }
 
 void keyPressed() {
-	char key = getKey();
+	uint8_t key = getKey();
 	if (!(key&0x80) && key < LEN) {
-		ncPrintHex(key);
 		char c = KEYS[key-1];
 		if (c == '?')
 			return;
@@ -48,6 +49,8 @@ void keyPressed() {
 		}
 	} else if (KEYS[(key&0xFF)-0x81] == '|') {
 		shiftPressed = 0;
+	} else if (key == SAVE_REGISTERS) {
+		saveRegisters();
 	}
 }
 

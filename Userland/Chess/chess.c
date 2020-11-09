@@ -59,10 +59,14 @@ static uint32_t timers[] = {0, 0};
 static uint8_t turn = PLAYER_W;
 
 static POINT textWriters[2] = {{110, 120}, {862, 120}};
+static uint16_t writersStartX[] = {110, 862};
 
 static POINT timer1 = {110, 100};
 
 static POINT timer2 = {862, 100};
+
+static char moves[2][6][1024];
+static uint16_t moves_idx[2];
 
 static char won = -1;
 
@@ -74,24 +78,30 @@ int main() {
 	uint8_t interval = setInterval(18, &updateTimer);
 	while(1) {
 		if (won != -1) {
-			putChar('0'+interval, 0, 0);
 			stopInterval(interval);
-			return 0;
+			return won;
 		}
 
-		uint8_t valid = readMove();
+		int valid = readMove();
 
-		if (valid)
+		if (valid == 1) {
 			turn = (turn == PLAYER_W)? PLAYER_B: PLAYER_W;
-		else
-			print("I");
+		} else if (valid == -1) {
+			stopInterval(interval);
+			return 2;
+		}
+		newLine();
 	}
-	return 0;
+	return -1;
 }
 
-void newLine(POINT * p, uint16_t x) {
-	p->x = x;
-	p->y += Y_INCREMENT;
+void newLine() {
+	POINT * p = &textWriters[turn];
+	p->x = writersStartX[turn];
+	for (int i = 0; i < 12; ++i)
+		putc(0, p); // Empty line
+	
+	p->x = writersStartX[turn];
 }
 
 void putc(char c, POINT * p) {
@@ -99,18 +109,9 @@ void putc(char c, POINT * p) {
 	p->x += X_INCREMENT;
 }
 
-void print(char * str) {
-	POINT * p = &textWriters[turn];
-	uint16_t aux = p->x;
-	while (*str != 0) {
-		putChar(*str, p->x, p->y);
-		p->x += X_INCREMENT;
-		str++;
-	}
-	newLine(p, aux);
-}
-
 void initBoard() {
+	moves_idx[0] = 0;
+	moves_idx[1] = 0;
 	uint64_t backgroundColor;
 	for (int i = 0; i < SQUARES; ++i) {
 		backgroundColor = (backgroundColor == WHITE_SQUARE)?BLACK_SQUARE:WHITE_SQUARE;
@@ -283,8 +284,9 @@ uint8_t canMove(uint8_t type, uint8_t fromRow, uint8_t fromCol, uint8_t toRow, u
 	return 0;
 }
 
-uint8_t readMove() {
+int readMove() {
 	POINT * p = &textWriters[turn];
+	uint8_t counter = 0;
 	uint16_t startX = p->x;
 
 	char fromRow = -1;
@@ -294,15 +296,21 @@ uint8_t readMove() {
 	uint8_t toCol;
 
 	char c = getChar();
+	moves[turn][moves_idx[turn]][counter++] = c;
 	putc(c, p);
+
 	if (c == '0') {
 		c = getChar();
+		moves[turn][moves_idx[turn]][counter++] = c;
 		putc(c, p);
 		if (c == '-') {
 			c = getChar();
+			moves[turn][moves_idx[turn]][counter++] = c;
 			putc(c, p);
 			if (c == '0') {
 				c = getChar();
+				moves[turn][moves_idx[turn]][counter++] = c;
+
 				uint8_t kingCol = 3;
 				uint8_t r = (turn == PLAYER_W)?0:SQUARES-1;
 
@@ -321,6 +329,7 @@ uint8_t readMove() {
 				} else if (c == '-') {
 					putc(c, p);
 					c = getChar();
+					moves[turn][moves_idx[turn]][counter++] = c;
 					putc(c, p);
 					if (c == '0') {
 						//enroque largo
@@ -331,28 +340,32 @@ uint8_t readMove() {
 						newKingSq = &(board.squares[r][kingCol+2]);
 						SQUARE aux = board.squares[r][kingCol+3];
 						if (!aux.empty) {
-							newLine(p, startX);
 							return 0;
 						}
 					}
+				} else {
+					if (c == 0)
+						return -1;
+
+					return 0;
 				}
 
 				if (kingSq->empty || kingSq->piece.moved || rookSq->empty || rookSq->piece.moved || !newRookSq->empty || !newKingSq->empty) {
-					putc('c', p);
-					newLine(p, startX);
 					return 0;
 				}
 
 				movePiece(rookSq, newRookSq);
 				movePiece(kingSq, newKingSq);
 
-				newLine(p, startX);
-				return 1;
-				
+				moves[turn][moves_idx[turn]][counter] = 0;
+				moves_idx[turn]++;
+				return 1;	
 			}
 		} 
 
-		newLine(p, startX);
+		if (c == 0)
+			return -1;
+
 		return 0;
 	}
 
@@ -372,23 +385,28 @@ uint8_t readMove() {
 
 	if (pieceType != PAWN) {
 		c = getChar();
+		moves[turn][moves_idx[turn]][counter++] = c;
 		putc(c, p);
 	}
 
 	if (c >= '1' && c <= '8'){
 		fromRow = '8' - c;
 		c = getChar();
+		moves[turn][moves_idx[turn]][counter++] = c;
 		putc(c, p);
 	}
 
 	if (c < 'a' || c > 'h') {
-		newLine(p, startX);
+		if (c == 0)
+			return -1;
+
 		return 0;
 	}
 
 	toCol = c - 'a';
 
 	c = getChar();
+	moves[turn][moves_idx[turn]][counter++] = c;
 	putc(c, p);
 
 	if (c >= 'a' && c <= 'h') {
@@ -397,15 +415,20 @@ uint8_t readMove() {
 			fromCol = toCol;
 			toCol = aux;
 			c = getChar();
+			moves[turn][moves_idx[turn]][counter++] = c;
 			putc(c, p);
 		} else {
-			newLine(p, startX);
+			if (c == 0)
+				return -1;
+
 			return 0;
 		}
 	}
 
 	if (c < '1' || c > '8'){
-		newLine(p, startX);
+		if (c == 0)
+			return -1;
+
 		return 0;
 	}
 
@@ -413,7 +436,9 @@ uint8_t readMove() {
 
 	SQUARE * destination = &(board.squares[toRow][toCol]);
 	if (!destination->empty && destination->piece.color == pieceColor) {
-		newLine(p, startX);
+		if (c == 0)
+			return -1;
+
 		return 0;
 	}
 
@@ -453,16 +478,14 @@ uint8_t readMove() {
 		}
 	}
 
-	if (!found) {
-		newLine(p, startX);
+	if (!found)
 		return 0;
-	}
 
 
 	movePiece(origin, destination);
 
-	newLine(p, startX);
-
+	moves[turn][moves_idx[turn]][counter] = 0;
+	moves_idx[turn]++;
 	return 1;
 }
 

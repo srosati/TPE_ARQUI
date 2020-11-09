@@ -10,6 +10,8 @@ typedef struct {
 
 SCREEN getScreenDimentions();
 
+void clearScreen();
+
 void drawPixel(uint16_t x, uint16_t y, uint64_t color);
 
 #endif

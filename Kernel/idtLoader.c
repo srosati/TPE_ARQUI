@@ -38,7 +38,7 @@ void configureIDT() {
   setupIDTEntry(0x80, (uint64_t)&_syscallhandler); // Syscall
 
   setupIDTEntry(0x00, (uint64_t)&_exception0Handler);
-  setupIDTEntry(0x01, (uint64_t)&_exception1Handler);
+  setupIDTEntry(0x06, (uint64_t)&_exception1Handler);
 
 	//Solo interrupcion timer tick y teclado habilitadas
 	picMasterMask(0xFC); //1111 1100

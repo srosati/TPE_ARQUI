@@ -6,8 +6,8 @@
 #define PLAYER_W 0
 #define PLAYER_B 1
 
-#define WHITE 0
-#define BLACK 0xFFFFFF
+#define WHITE 0xFFFFFF
+#define BLACK 0
 
 #define WHITE_SQUARE 0xEDB879
 #define BLACK_SQUARE 0x80391E
@@ -20,12 +20,12 @@
 #define X_INCREMENT 8
 #define Y_INCREMENT 16
 
-#define PAWN 0
-#define ROOK 1
-#define KNIGHT 2
-#define BISHOP 3
-#define QUEEN 4
-#define KING 5
+#define PAWN 1
+#define ROOK 2
+#define KNIGHT 3
+#define BISHOP 4
+#define QUEEN 5
+#define KING 6
 
 
 typedef struct {
@@ -52,7 +52,7 @@ typedef struct {
 } POINT;
 
 
-void newLine(POINT * p, uint16_t x);
+void newLine();
 
 void putc(char c, POINT * p);
 
@@ -66,7 +66,7 @@ void movePiece(SQUARE * old, SQUARE * new);
 
 uint8_t canMove(uint8_t type, uint8_t fromRow, uint8_t fromCol, uint8_t toRow, uint8_t toCol);
 
-uint8_t readMove();
+int readMove();
 
 void drawSquare(SQUARE square);
 

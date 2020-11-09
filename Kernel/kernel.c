@@ -7,6 +7,7 @@
 #include <keyboardDriver.h>
 #include <idtLoader.h>
 #include <timeDriver.h>
+#include <exceptions.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -80,6 +81,7 @@ void * initializeKernelBinary() {
 	ncNewline();
 	return getStackBase();
 }
+
 
 
 int main() {

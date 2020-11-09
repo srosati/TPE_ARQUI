@@ -7,6 +7,7 @@ GLOBAL picMasterMask
 GLOBAL picSlaveMask
 
 EXTERN irqDispatcher
+EXTERN clearScreen
 EXTERN getChar
 EXTERN putChar
 EXTERN getTime
@@ -14,6 +15,9 @@ EXTERN drawPixel
 EXTERN setInterval
 EXTERN stopInterval
 EXTERN getScreenDimentions
+EXTERN getMem
+EXTERN getRegisters
+EXTERN exceptionCode
 
 section .text
 
@@ -75,6 +79,8 @@ _irq1handler:
 
 _syscallhandler:
 	sti
+	cmp rax, 0
+	je .clear_screen
 	cmp rax, 1
 	je .call_getc
 	cmp rax, 2
@@ -89,6 +95,16 @@ _syscallhandler:
 	je .stop_interval
 	cmp rax, 7
 	je .get_screen_dimentions
+	cmp rax, 8
+	je .get_mem
+	cmp rax, 9
+	je .get_registers
+	cmp rax, 10
+	je .get_exception_code
+	jmp .done
+
+.clear_screen:
+	call clearScreen
 	jmp .done
 
 .call_getc:
@@ -117,6 +133,18 @@ _syscallhandler:
 
 .get_screen_dimentions:
 	call getScreenDimentions
+	jmp .done
+
+.get_mem:
+	call getMem
+	jmp .done
+
+.get_registers:
+	call getRegisters
+	jmp .done
+
+.get_exception_code:
+	call exceptionCode
 	jmp .done
 
 .done:

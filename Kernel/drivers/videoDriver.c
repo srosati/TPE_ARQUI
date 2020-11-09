@@ -48,6 +48,13 @@ SCREEN getScreenDimentions() {
 	return screen;
 }
 
+void clearScreen() {
+	for (int i = 0; i < screenData->width; ++i) {
+		for (int j = 0; j < screenData->height; ++j)
+			drawPixel(i, j, 0);
+	}
+}
+
 void drawPixel(uint16_t x, uint16_t y, uint64_t color) {
 	char * currPos = screenData->framebuffer + 3 * (x + y * (screenData->width));
 

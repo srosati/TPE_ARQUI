@@ -2,7 +2,8 @@ include ../Makefile.inc
 
 MODULE=0000-shell.bin
 SOURCES=$(wildcard [^_]*.c)
-LIB_O='../lib.o'
+LIB_O=../lib.o ../libc.o
+
 
 all: $(MODULE)
 

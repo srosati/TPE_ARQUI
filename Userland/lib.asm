@@ -1,3 +1,4 @@
+GLOBAL clearScreen
 GLOBAL getChar
 GLOBAL putChar
 GLOBAL getTime
@@ -5,6 +6,10 @@ GLOBAL drawPixel
 GLOBAL setInterval
 GLOBAL stopInterval
 GLOBAL getScreenDimentions
+GLOBAL getMem
+GLOBAL getRegisters
+GLOBAL checkException
+GLOBAL invalidOpCode
 
 section .text
 
@@ -17,6 +22,9 @@ section .text
 	pop rbp
 	ret
 %endmacro
+
+clearScreen:
+	handler 0
 
 getChar:
 	handler 1
@@ -38,3 +46,15 @@ stopInterval:
 
 getScreenDimentions:
 	handler 7
+
+getMem:
+	handler 8
+
+getRegisters:
+	handler 9
+
+checkException:
+	handler 10
+
+invalidOpCode:
+	ud2

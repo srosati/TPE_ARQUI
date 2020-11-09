@@ -17,6 +17,11 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 
 char * cpuVendor(char *result);
 
+void saveRegisters();
+void saveRip(uint64_t rip);
+
+void getRegisters(uint64_t * buff);
+
 char getKey();
 
 char getChar();
@@ -24,5 +29,7 @@ char getChar();
 void putChar(char c, uint16_t x, uint16_t y);
 
 TIME getTime();
+
+void getMem(uint64_t mem, uint8_t * buff, uint8_t bytes);
 
 #endif
