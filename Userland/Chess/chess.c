@@ -70,10 +70,25 @@ static uint16_t moves_idx[2];
 
 static char won = -1;
 
+static uint8_t paused = 0;
+
 int main() {
-	printTimer(timer1, "00", "00");
-	printTimer(timer2, "00", "00");
-	initBoard();
+	if (!paused) {
+		printTimer(timer1, "00", "00");
+		printTimer(timer2, "00", "00");
+		initBoard();
+	} else {
+		for (int i = 0; i < 2; ++i) {
+			POINT p = textWriters[i];
+			uint8_t seconds = timers[i] % 60;
+			uint8_t minutes = timers[i] / 60;
+			char s[3] = {'0', '0', 0};
+			char m[3] = {'0', '0', 0};
+			toStr(seconds, s, 2);
+			toStr(minutes, m, 2);
+			printTimer(p, m, s);
+		}
+	}
 	drawBoard();
 	uint8_t interval = setInterval(18, &updateTimer);
 	while(1) {
@@ -82,11 +97,12 @@ int main() {
 			return won;
 		}
 
-		int valid = readMove();
+		int ret = readMove();
 
-		if (valid == 1) {
+		if (ret == 1) {
 			turn = (turn == PLAYER_W)? PLAYER_B: PLAYER_W;
-		} else if (valid == -1) {
+		} else if (ret == -1) {
+			paused = 1;
 			stopInterval(interval);
 			return 2;
 		}
@@ -110,8 +126,14 @@ void putc(char c, POINT * p) {
 }
 
 void initBoard() {
+	won = -1;
+	paused = 0;
+	timers[0] = 0;
+	timers[1] = 0;
 	moves_idx[0] = 0;
 	moves_idx[1] = 0;
+	turn = PLAYER_W;
+
 	uint64_t backgroundColor;
 	for (int i = 0; i < SQUARES; ++i) {
 		backgroundColor = (backgroundColor == WHITE_SQUARE)?BLACK_SQUARE:WHITE_SQUARE;
